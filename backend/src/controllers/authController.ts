@@ -14,10 +14,12 @@ import { AuthRequest } from '../middleware/auth';
  * Generate JWT token
  */
 function generateToken(userId: string, email: string): string {
+  const secret = process.env.JWT_SECRET || 'dev-secret';
+  const expiresIn = process.env.JWT_EXPIRES_IN || '7d';
   return jwt.sign(
     { userId, email },
-    process.env.JWT_SECRET || 'dev-secret',
-    { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+    secret,
+    { expiresIn: expiresIn as string }
   );
 }
 

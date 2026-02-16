@@ -41,7 +41,7 @@ router.get('/', async (req: AuthRequest, res: Response) => {
 
     // Get task counts for each project
     const projectsWithCounts = await Promise.all(
-      projects.map(async (project) => {
+      projects.map(async (project: any) => {
         const taskCount = await Task.count({ where: { projectId: project.id } });
         const openTaskCount = await Task.count({
           where: { projectId: project.id, status: { [require('sequelize').Op.ne]: 'done' } },
@@ -53,7 +53,7 @@ router.get('/', async (req: AuthRequest, res: Response) => {
           name: project.name,
           description: project.description,
           ownerId: project.ownerId,
-          owner: project.owner,
+          owner: project.owner || null,
           status: project.status,
           taskCount,
           openTaskCount,
