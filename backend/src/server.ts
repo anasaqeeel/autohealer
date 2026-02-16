@@ -178,9 +178,11 @@ async function startServer() {
     await syncDatabase(forceSync);
     
     // Start HTTP server
-    app.listen(PORT, () => {
-      console.log(`🚀 TaskMaster Pro backend running on port ${PORT}`);
-      console.log(`📊 Health check: http://localhost:${PORT}/health`);
+    // Listen on 0.0.0.0 to accept connections from all network interfaces (required for Docker/Railway)
+    const HOST = process.env.HOST || '0.0.0.0';
+    app.listen(PORT, HOST, () => {
+      console.log(`🚀 TaskMaster Pro backend running on ${HOST}:${PORT}`);
+      console.log(`📊 Health check: http://${HOST}:${PORT}/health`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
     });
   } catch (error) {
