@@ -22,13 +22,14 @@ dotenv.config();
 
 // Create Sequelize instance
 // This is the connection pool that will handle all database queries
+// Railway provides MYSQLHOST, MYSQLPORT, etc. - use those if DB_HOST not set
 const sequelize = new Sequelize(
-  process.env.DB_NAME || 'taskmaster_pro',
-  process.env.DB_USER || 'taskmaster_user',
-  process.env.DB_PASSWORD || 'taskmaster_password',
+  process.env.DB_NAME || process.env.MYSQL_DATABASE || 'taskmaster_pro',
+  process.env.DB_USER || process.env.MYSQLUSER || 'taskmaster_user',
+  process.env.DB_PASSWORD || process.env.MYSQLPASSWORD || 'taskmaster_password',
   {
-    host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT || '3306'),
+    host: process.env.DB_HOST || process.env.MYSQLHOST || 'localhost',
+    port: parseInt(process.env.DB_PORT || process.env.MYSQLPORT || '3306'),
     dialect: 'mysql',
     logging: process.env.NODE_ENV === 'development' ? console.log : false, // Log SQL queries in dev only
     pool: {
