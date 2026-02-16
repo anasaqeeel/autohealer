@@ -20,16 +20,34 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+// Railway provides MYSQL_URL (connection string) or individual variables
+// Priority: MYSQL_URL > DB_* variables > MYSQL* variables > defaults
+const dbName = process.env.DB_NAME || process.env.MYSQL_DATABASE || 'taskmaster_pro';
+const dbUser = process.env.DB_USER || process.env.MYSQLUSER || 'taskmaster_user';
+const dbPassword = process.env.DB_PASSWORD || process.env.MYSQLPASSWORD || 'taskmaster_password';
+const dbHost = process.env.DB_HOST || process.env.MYSQLHOST || 'localhost';
+const dbPort = parseInt(process.env.DB_PORT || process.env.MYSQLPORT || '3306');
+
+// Log database config (without password) for debugging
+console.log('🔍 Database Config:', {
+  host: dbHost,
+  port: dbPort,
+  database: dbName,
+  user: dbUser,
+  hasPassword: !!dbPassword,
+  usingMYSQLHOST: !!process.env.MYSQLHOST,
+  usingDB_HOST: !!process.env.DB_HOST,
+});
+
 // Create Sequelize instance
 // This is the connection pool that will handle all database queries
-// Railway provides MYSQLHOST, MYSQLPORT, etc. - use those if DB_HOST not set
 const sequelize = new Sequelize(
-  process.env.DB_NAME || process.env.MYSQL_DATABASE || 'taskmaster_pro',
-  process.env.DB_USER || process.env.MYSQLUSER || 'taskmaster_user',
-  process.env.DB_PASSWORD || process.env.MYSQLPASSWORD || 'taskmaster_password',
+  dbName,
+  dbUser,
+  dbPassword,
   {
-    host: process.env.DB_HOST || process.env.MYSQLHOST || 'localhost',
-    port: parseInt(process.env.DB_PORT || process.env.MYSQLPORT || '3306'),
+    host: dbHost,
+    port: dbPort,
     dialect: 'mysql',
     logging: process.env.NODE_ENV === 'development' ? console.log : false, // Log SQL queries in dev only
     pool: {
