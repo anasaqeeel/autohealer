@@ -20,13 +20,28 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Railway provides MYSQL_URL (connection string) or individual variables
-// Priority: MYSQL_URL > DB_* variables > MYSQL* variables > defaults
-const dbName = process.env.DB_NAME || process.env.MYSQL_DATABASE || 'taskmaster_pro';
-const dbUser = process.env.DB_USER || process.env.MYSQLUSER || 'taskmaster_user';
-const dbPassword = process.env.DB_PASSWORD || process.env.MYSQLPASSWORD || 'taskmaster_password';
-const dbHost = process.env.DB_HOST || process.env.MYSQLHOST || 'localhost';
-const dbPort = parseInt(process.env.DB_PORT || process.env.MYSQLPORT || '3306');
+// Railway provides MYSQL_PUBLIC_URL (public connection string) or MYSQL_URL (internal)
+// Parse connection string if available, otherwise use individual variables
+let dbName = process.env.DB_NAME || process.env.MYSQL_DATABASE || 'taskmaster_pro';
+let dbUser = process.env.DB_USER || process.env.MYSQLUSER || 'taskmaster_user';
+let dbPassword = process.env.DB_PASSWORD || process.env.MYSQLPASSWORD || 'taskmaster_password';
+let dbHost = process.env.DB_HOST || process.env.MYSQLHOST || 'localhost';
+let dbPort = parseInt(process.env.DB_PORT || process.env.MYSQLPORT || '3306');
+
+// Parse MYSQL_PUBLIC_URL if available (Railway provides this with correct public host)
+if (process.env.MYSQL_PUBLIC_URL) {
+  try {
+    const url = new URL(process.env.MYSQL_PUBLIC_URL.replace('mysql://', 'http://'));
+    dbHost = url.hostname;
+    dbPort = parseInt(url.port) || 3306;
+    dbUser = url.username || dbUser;
+    dbPassword = url.password || dbPassword;
+    dbName = url.pathname.replace('/', '') || dbName;
+    console.log('✅ Using MYSQL_PUBLIC_URL for database connection');
+  } catch (error) {
+    console.warn('⚠️ Failed to parse MYSQL_PUBLIC_URL, using individual variables');
+  }
+}
 
 // Log database config (without password) for debugging
 console.log('🔍 Database Config:', {
@@ -35,6 +50,7 @@ console.log('🔍 Database Config:', {
   database: dbName,
   user: dbUser,
   hasPassword: !!dbPassword,
+  usingMYSQL_PUBLIC_URL: !!process.env.MYSQL_PUBLIC_URL,
   usingMYSQLHOST: !!process.env.MYSQLHOST,
   usingDB_HOST: !!process.env.DB_HOST,
 });
