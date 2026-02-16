@@ -23,7 +23,7 @@ import './models'; // Import models to register them with Sequelize
 dotenv.config();
 
 const app: Application = express();
-const PORT = process.env.PORT || 3001;
+const PORT = parseInt(process.env.PORT || '3001', 10);
 
 // ============================================
 // MIDDLEWARE SETUP
