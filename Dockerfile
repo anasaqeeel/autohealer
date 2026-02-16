@@ -1,20 +1,18 @@
 # Root Dockerfile for Railway deployment
-# This builds the backend service
-# 
-# Railway will use this Dockerfile when deploying from the root
+# This builds the backend service from the root directory
 
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files from backend directory
 COPY backend/package*.json ./
 COPY backend/tsconfig.json ./
 
 # Install dependencies
 RUN npm ci
 
-# Copy source code
+# Copy source code from backend directory
 COPY backend/src ./src
 
 # Build TypeScript
@@ -29,14 +27,14 @@ WORKDIR /app
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001
 
-# Copy package files
+# Copy package files from backend directory
 COPY backend/package*.json ./
 
 # Install only production dependencies
 RUN npm ci --only=production && \
     npm cache clean --force
 
-# Copy built files
+# Copy built files from builder stage
 COPY --from=builder /app/dist ./dist
 
 # Change ownership
