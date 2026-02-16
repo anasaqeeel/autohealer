@@ -19,7 +19,7 @@ function generateToken(userId: string, email: string): string {
   return jwt.sign(
     { userId, email },
     secret,
-    { expiresIn: expiresIn as string }
+    { expiresIn } as jwt.SignOptions
   );
 }
 
