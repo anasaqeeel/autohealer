@@ -53,6 +53,11 @@ if (process.env.NODE_ENV !== 'test') {
   app.use(morgan('dev'));
 }
 
+// Metrics middleware (for Prometheus)
+import { metricsMiddleware } from './middleware/metrics';
+import { register } from './utils/metrics';
+app.use(metricsMiddleware);
+
 // ============================================
 // HEALTH CHECK ENDPOINT
 // ============================================
@@ -85,6 +90,21 @@ app.get('/health', async (req: Request, res: Response) => {
       status: 'error',
       message: 'Service unhealthy',
     });
+  }
+});
+
+/**
+ * Metrics Endpoint (Prometheus)
+ * 
+ * Exposes Prometheus metrics for scraping
+ * Prometheus will scrape this endpoint every 15 seconds
+ */
+app.get('/metrics', async (req: Request, res: Response) => {
+  try {
+    res.set('Content-Type', register.contentType);
+    res.end(await register.metrics());
+  } catch (error) {
+    res.status(500).end(error);
   }
 });
 

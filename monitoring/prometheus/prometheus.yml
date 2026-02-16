@@ -1,0 +1,51 @@
+# Prometheus Configuration
+# 
+# This file configures Prometheus to scrape metrics from:
+# - Backend API (Node.js application)
+# - Prometheus itself
+#
+# Scrape interval: How often to collect metrics (15s is standard)
+# Evaluation interval: How often to evaluate alert rules
+
+global:
+  scrape_interval: 15s      # Scrape targets every 15 seconds
+  evaluation_interval: 15s   # Evaluate rules every 15 seconds
+  external_labels:
+    cluster: 'taskmaster-pro'
+    environment: 'development'
+
+# Alertmanager configuration (for future use)
+# alerting:
+#   alertmanagers:
+#     - static_configs:
+#         - targets: ['alertmanager:9093']
+
+# Load rules once and periodically evaluate them
+rule_files:
+  # - "alert_rules.yml"
+
+# Scrape configurations
+scrape_configs:
+  # Scrape Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          service: 'prometheus'
+
+  # Scrape Backend API
+  - job_name: 'taskmaster-backend'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['backend:3001']
+        labels:
+          service: 'backend'
+          environment: 'development'
+    scrape_interval: 10s  # More frequent for application metrics
+
+  # Scrape Node.js metrics (if using prom-client)
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          service: 'node-exporter'

@@ -287,6 +287,13 @@ router.post('/:id/tasks', async (req: AuthRequest, res: Response) => {
       status: 'todo',
     });
 
+    // Track business metric
+    const { tasksCreatedCounter } = require('../utils/metrics');
+    tasksCreatedCounter.inc({
+      organization_id: project.organizationId,
+      project_id: project.id,
+    });
+
     const taskWithAssignee = await Task.findByPk(task.id, {
       include: [
         { model: User, as: 'assignee', attributes: ['id', 'name', 'email'] },

@@ -179,7 +179,20 @@ router.patch('/:id', async (req: AuthRequest, res: Response) => {
       return;
     }
 
+    const oldStatus = task.status;
     await task.update(req.body);
+
+    // Track business metric if task was completed
+    if (oldStatus !== 'done' && req.body.status === 'done') {
+      const { tasksCompletedCounter } = require('../utils/metrics');
+      const project = await Project.findByPk(task.projectId);
+      if (project) {
+        tasksCompletedCounter.inc({
+          organization_id: project.organizationId,
+          project_id: project.id,
+        });
+      }
+    }
 
     const updatedTask = await Task.findByPk(task.id, {
       include: [
