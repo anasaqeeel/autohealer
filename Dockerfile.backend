@@ -1,5 +1,6 @@
-# Root Dockerfile for Railway deployment
+# Backend Dockerfile for Railway deployment
 # This builds the backend service from the root directory
+# Renamed from Dockerfile to Dockerfile.backend to avoid conflicts with frontend service
 
 FROM node:20-alpine AS builder
 
