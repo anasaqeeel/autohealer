@@ -50,6 +50,9 @@ RUN addgroup -g 1001 -S nodejs && \
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# Use Railway's PORT environment variable (defaults to 3000)
+ENV PORT=${PORT:-3000}
+
 # Copy necessary files from builder
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
@@ -61,12 +64,12 @@ RUN chown -R nextjs:nodejs /app
 # Switch to non-root user
 USER nextjs
 
-# Expose port
-EXPOSE 3000
+# Expose port (use PORT env var, Railway will set this)
+EXPOSE ${PORT:-3000}
 
-# Health check
+# Health check (use PORT env var)
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+  CMD node -e "require('http').get('http://localhost:' + (process.env.PORT || 3000), (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 
 # Start the application
 CMD ["node", "server.js"]
