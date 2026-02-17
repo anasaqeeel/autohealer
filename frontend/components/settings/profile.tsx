@@ -9,6 +9,101 @@ import { Label } from '@/components/ui/label'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 import { toast } from 'sonner'
+import { apiPatch, apiPost } from '@/lib/api-client'
+
+function PasswordChangeForm() {
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [isChanging, setIsChanging] = useState(false)
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (newPassword.length < 6) {
+      toast.error('Password must be at least 6 characters')
+      return
+    }
+    
+    if (newPassword !== confirmPassword) {
+      toast.error('Passwords do not match')
+      return
+    }
+
+    setIsChanging(true)
+    try {
+      const response = await apiPost('/auth/change-password', {
+        currentPassword,
+        newPassword,
+      })
+      if (!response.success) {
+        throw new Error(response.error?.message || 'Failed to change password')
+      }
+      toast.success('Password changed successfully')
+      setCurrentPassword('')
+      setNewPassword('')
+      setConfirmPassword('')
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to change password')
+    } finally {
+      setIsChanging(false)
+    }
+  }
+
+  return (
+    <form onSubmit={handleChangePassword} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="current">Current Password</Label>
+        <Input
+          id="current"
+          type="password"
+          placeholder="••••••••"
+          value={currentPassword}
+          onChange={(e) => setCurrentPassword(e.target.value)}
+          disabled={isChanging}
+          className="h-10"
+          required
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="new">New Password</Label>
+        <Input
+          id="new"
+          type="password"
+          placeholder="••••••••"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+          disabled={isChanging}
+          className="h-10"
+          minLength={6}
+          required
+        />
+        <p className="text-xs text-muted-foreground">
+          Must be at least 6 characters
+        </p>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="confirm">Confirm Password</Label>
+        <Input
+          id="confirm"
+          type="password"
+          placeholder="••••••••"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          disabled={isChanging}
+          className="h-10"
+          required
+        />
+      </div>
+
+      <Button type="submit" disabled={isChanging} className="mt-4">
+        {isChanging ? 'Changing...' : 'Update Password'}
+      </Button>
+    </form>
+  )
+}
 
 export function SettingsProfile() {
   const { user } = useAuth()
@@ -32,12 +127,16 @@ export function SettingsProfile() {
   const handleSave = async () => {
     setIsSaving(true)
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500))
+      const response = await apiPatch('/auth/profile', formData)
+      if (!response.success) {
+        throw new Error(response.error?.message || 'Failed to update profile')
+      }
       toast.success('Profile updated successfully')
       setIsEditing(false)
-    } catch (error) {
-      toast.error('Failed to update profile')
+      // Refresh auth context to get updated user
+      window.location.reload()
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to update profile')
     } finally {
       setIsSaving(false)
     }
@@ -124,37 +223,7 @@ export function SettingsProfile() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="current">Current Password</Label>
-            <Input
-              id="current"
-              type="password"
-              placeholder="••••••••"
-              className="h-10"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="new">New Password</Label>
-            <Input
-              id="new"
-              type="password"
-              placeholder="••••••••"
-              className="h-10"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="confirm">Confirm Password</Label>
-            <Input
-              id="confirm"
-              type="password"
-              placeholder="••••••••"
-              className="h-10"
-            />
-          </div>
-
-          <Button className="mt-4">Update Password</Button>
+          <PasswordChangeForm />
         </CardContent>
       </Card>
     </div>

@@ -150,6 +150,10 @@ router.post('/', async (req: AuthRequest, res: Response) => {
       status: 'active',
     });
 
+    // Log activity
+    const { logProjectCreated } = require('../services/activityService');
+    await logProjectCreated(project, userId, memberships[0].organizationId);
+
     const projectWithOwner = await Project.findByPk(project.id, {
       include: [{ model: User, as: 'owner', attributes: ['id', 'name', 'email'] }],
     });
@@ -293,6 +297,10 @@ router.post('/:id/tasks', async (req: AuthRequest, res: Response) => {
       organization_id: project.organizationId,
       project_id: project.id,
     });
+
+    // Log activity
+    const { logTaskCreated } = require('../services/activityService');
+    await logTaskCreated(task, userId, project.organizationId);
 
     const taskWithAssignee = await Task.findByPk(task.id, {
       include: [

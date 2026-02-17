@@ -208,8 +208,11 @@ export function useDeleteTask() {
       if (!response.success) throw new Error(response.error?.message)
       return response.data
     },
-    onSuccess: () => {
+    onSuccess: (_, taskId) => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.tasks() })
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.task(taskId) })
+      // Also invalidate project tasks if we know the project
+      queryClient.invalidateQueries({ queryKey: ['projects'] })
     },
   })
 }

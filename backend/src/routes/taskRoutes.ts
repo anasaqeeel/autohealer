@@ -180,6 +180,7 @@ router.patch('/:id', async (req: AuthRequest, res: Response) => {
     }
 
     const oldStatus = task.status;
+    const changes = req.body;
     await task.update(req.body);
 
     // Track business metric if task was completed
@@ -192,6 +193,13 @@ router.patch('/:id', async (req: AuthRequest, res: Response) => {
           project_id: project.id,
         });
       }
+    }
+
+    // Log activity
+    const { logTaskUpdated } = require('../services/activityService');
+    const project = await Project.findByPk(task.projectId);
+    if (project) {
+      await logTaskUpdated(task, userId, project.organizationId, changes);
     }
 
     const updatedTask = await Task.findByPk(task.id, {
@@ -209,6 +217,48 @@ router.patch('/:id', async (req: AuthRequest, res: Response) => {
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to update task',
+    });
+  }
+});
+
+/**
+ * DELETE /api/tasks/:id
+ * Delete task
+ */
+router.delete('/:id', async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user!.id;
+    const orgIds = await getUserOrganizationIds(userId);
+
+    const task = await Task.findOne({
+      where: { id: req.params.id },
+      include: [
+        {
+          model: Project,
+          as: 'project',
+          where: { organizationId: orgIds },
+        },
+      ],
+    });
+
+    if (!task) {
+      res.status(404).json({
+        success: false,
+        message: 'Task not found',
+      });
+      return;
+    }
+
+    await task.destroy();
+
+    res.json({
+      success: true,
+      message: 'Task deleted successfully',
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to delete task',
     });
   }
 });
@@ -256,6 +306,13 @@ router.post('/:id/comments', async (req: AuthRequest, res: Response) => {
       authorId: userId,
       content,
     });
+
+    // Log activity
+    const { logCommentAdded } = require('../services/activityService');
+    const project = await Project.findByPk(task.projectId);
+    if (project) {
+      await logCommentAdded(comment, userId, project.organizationId);
+    }
 
     const commentWithAuthor = await Comment.findByPk(comment.id, {
       include: [{ model: User, as: 'author', attributes: ['id', 'name', 'email'] }],

@@ -58,13 +58,10 @@ export async function register(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create user
+    // Create user (password will be hashed by User model's beforeCreate hook)
     const user = await User.create({
       email,
-      password: hashedPassword,
+      password, // Pass plain password - model hooks will hash it
       name,
       role: 'member',
     });
@@ -261,6 +258,121 @@ export async function getMe(req: AuthRequest, res: Response): Promise<void> {
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to get user info',
+    });
+  }
+}
+
+/**
+ * PATCH /api/auth/profile
+ * Update user profile
+ */
+export async function updateProfile(req: AuthRequest, res: Response): Promise<void> {
+  try {
+    const userId = req.user!.id;
+    const { name, email } = req.body;
+
+    const user = await User.findByPk(userId);
+    if (!user) {
+      res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+      return;
+    }
+
+    // Check if email is being changed and if it's already taken
+    if (email && email !== user.email) {
+      const existingUser = await User.findOne({ where: { email } });
+      if (existingUser) {
+        res.status(400).json({
+          success: false,
+          message: 'Email already in use',
+        });
+        return;
+      }
+    }
+
+    await user.update({
+      name: name || user.name,
+      email: email || user.email,
+    });
+
+    const updatedUser = await User.findByPk(userId, {
+      attributes: { exclude: ['password'] },
+    });
+
+    res.json({
+      success: true,
+      data: {
+        user: updatedUser,
+      },
+    });
+  } catch (error: any) {
+    console.error('Update profile error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to update profile',
+    });
+  }
+}
+
+/**
+ * POST /api/auth/change-password
+ * Change user password
+ */
+export async function changePassword(req: AuthRequest, res: Response): Promise<void> {
+  try {
+    const userId = req.user!.id;
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      res.status(400).json({
+        success: false,
+        message: 'Current password and new password are required',
+      });
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      res.status(400).json({
+        success: false,
+        message: 'New password must be at least 6 characters',
+      });
+      return;
+    }
+
+    const user = await User.findByPk(userId);
+    if (!user) {
+      res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+      return;
+    }
+
+    // Verify current password
+    const isValidPassword = await bcrypt.compare(currentPassword, user.password);
+    if (!isValidPassword) {
+      res.status(401).json({
+        success: false,
+        message: 'Current password is incorrect',
+      });
+      return;
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await user.update({ password: hashedPassword });
+
+    res.json({
+      success: true,
+      message: 'Password changed successfully',
+    });
+  } catch (error: any) {
+    console.error('Change password error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to change password',
     });
   }
 }
