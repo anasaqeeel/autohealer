@@ -1,12 +1,16 @@
 # Frontend Dockerfile - Next.js Production Build
 # This is the FRONTEND service - DO NOT use backend files!
-# Cache bust: v3.0 - 2026-02-17
+# Cache bust: v4.0 - 2026-02-17-05:20
 
 # Stage 1: Dependencies
 FROM node:20-alpine AS deps
+
+# Add cache busting layer
+RUN echo "Frontend build - v4.0" > /tmp/build-id.txt
+
 WORKDIR /app
 
-# Copy ONLY frontend package files
+# Copy ONLY frontend package files (not backend!)
 COPY package.json package-lock.json* ./
 COPY .npmrc* ./
 
