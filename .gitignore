@@ -53,6 +53,11 @@ __v0_jsx-dev-runtime.ts
 *.sqlite
 *.db
 
+# Kubernetes secrets (NEVER commit real secrets!)
+k8s/secrets.yaml
+**/secrets.yaml
+!**/secrets.yaml.example
+
 # Temporary files
 *.tmp
 *.temp
