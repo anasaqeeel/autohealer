@@ -176,12 +176,20 @@ export default function LoginPage() {
         </Card>
 
         {/* Footer */}
-        <p className="text-center text-sm text-muted-foreground mt-8">
-          Need help?{' '}
-          <a href="#" className="text-primary hover:underline">
-            Contact support
-          </a>
-        </p>
+        <div className="mt-8 text-center space-y-2">
+          <p className="text-sm text-muted-foreground">
+            Don't have an account?{' '}
+            <Link href="/signup" className="text-primary hover:underline font-medium">
+              Sign up
+            </Link>
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Need help?{' '}
+            <a href="#" className="text-primary hover:underline">
+              Contact support
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   )
