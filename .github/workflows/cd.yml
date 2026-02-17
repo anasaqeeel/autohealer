@@ -5,6 +5,12 @@ on:
     branches: [ main ]
     tags:
       - 'v*'
+  workflow_dispatch:  # Allow manual trigger
+
+# Explicit permissions for GitHub Container Registry
+permissions:
+  contents: read
+  packages: write
 
 env:
   REGISTRY: ghcr.io
@@ -15,9 +21,7 @@ jobs:
   build-and-push:
     name: Build and Push Docker Images
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
+    # Permissions inherited from workflow level
     
     strategy:
       matrix:
@@ -61,10 +65,11 @@ jobs:
           cache-to: type=gha,mode=max
 
   # Deploy to Railway (if configured)
+  # Note: Railway auto-deploys on git push, so this is optional
   deploy-railway:
     name: Deploy to Railway
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && secrets.RAILWAY_TOKEN != ''
     needs: build-and-push
     
     steps:
