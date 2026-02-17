@@ -44,7 +44,10 @@ export async function logTaskCreated(
   userId: string,
   organizationId: string
 ): Promise<void> {
-  const project = await task.getProject();
+  const { Project } = require('../models');
+  const project = await Project.findByPk(task.projectId);
+  if (!project) return;
+  
   await createActivity({
     organizationId,
     userId,
@@ -71,7 +74,10 @@ export async function logTaskUpdated(
   organizationId: string,
   changes: any
 ): Promise<void> {
-  const project = await task.getProject();
+  const { Project } = require('../models');
+  const project = await Project.findByPk(task.projectId);
+  if (!project) return;
+  
   const changeDescriptions: string[] = [];
   
   if (changes.status) {
@@ -137,8 +143,12 @@ export async function logCommentAdded(
   userId: string,
   organizationId: string
 ): Promise<void> {
-  const task = await comment.getTask();
-  const project = await task.getProject();
+  const { Task, Project } = require('../models');
+  const task = await Task.findByPk(comment.taskId);
+  if (!task) return;
+  
+  const project = await Project.findByPk(task.projectId);
+  if (!project) return;
   
   await createActivity({
     organizationId,
