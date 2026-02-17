@@ -10,6 +10,9 @@
 import request from 'supertest';
 import app from '../src/server';
 
+// Note: If server.ts doesn't export app, we may need to create a test server
+// For now, this assumes app is exported from server.ts
+
 describe('Health Check Endpoint', () => {
   describe('GET /health', () => {
     it('should return 200 status code', async () => {

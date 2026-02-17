@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: taskmaster-pro
+  labels:
+    name: taskmaster-pro
+    environment: production
