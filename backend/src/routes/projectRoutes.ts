@@ -43,8 +43,10 @@ router.get('/', async (req: AuthRequest, res: Response) => {
     const projectsWithCounts = await Promise.all(
       projects.map(async (project: any) => {
         const taskCount = await Task.count({ where: { projectId: project.id } });
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const { Op } = require('sequelize');
         const openTaskCount = await Task.count({
-          where: { projectId: project.id, status: { [require('sequelize').Op.ne]: 'done' } },
+          where: { projectId: project.id, status: { [Op.ne]: 'done' } },
         });
 
         return {
@@ -151,6 +153,7 @@ router.post('/', async (req: AuthRequest, res: Response) => {
     });
 
     // Log activity
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { logProjectCreated } = require('../services/activityService');
     await logProjectCreated(project, userId, memberships[0].organizationId);
 
@@ -292,6 +295,7 @@ router.post('/:id/tasks', async (req: AuthRequest, res: Response) => {
     });
 
     // Track business metric
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { tasksCreatedCounter } = require('../utils/metrics');
     tasksCreatedCounter.inc({
       organization_id: project.organizationId,
@@ -299,6 +303,7 @@ router.post('/:id/tasks', async (req: AuthRequest, res: Response) => {
     });
 
     // Log activity
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { logTaskCreated } = require('../services/activityService');
     await logTaskCreated(task, userId, project.organizationId);
 

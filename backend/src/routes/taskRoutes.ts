@@ -63,23 +63,27 @@ router.get('/', async (req: AuthRequest, res: Response) => {
     if (req.query.dueDate) {
       const now = new Date();
       switch (req.query.dueDate) {
-        case 'overdue':
+        case 'overdue': {
           where.dueDate = { [Op.lt]: now };
           where.status = { [Op.ne]: 'done' };
           break;
-        case 'today':
+        }
+        case 'today': {
           const startOfDay = new Date(now.setHours(0, 0, 0, 0));
           const endOfDay = new Date(now.setHours(23, 59, 59, 999));
           where.dueDate = { [Op.between]: [startOfDay, endOfDay] };
           break;
-        case 'next_7_days':
+        }
+        case 'next_7_days': {
           const in7Days = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
           where.dueDate = { [Op.between]: [now, in7Days] };
           break;
-        case 'next_30_days':
+        }
+        case 'next_30_days': {
           const in30Days = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
           where.dueDate = { [Op.between]: [now, in30Days] };
           break;
+        }
       }
     }
 
@@ -185,6 +189,7 @@ router.patch('/:id', async (req: AuthRequest, res: Response) => {
 
     // Track business metric if task was completed
     if (oldStatus !== 'done' && req.body.status === 'done') {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { tasksCompletedCounter } = require('../utils/metrics');
       const project = await Project.findByPk(task.projectId);
       if (project) {
@@ -196,6 +201,7 @@ router.patch('/:id', async (req: AuthRequest, res: Response) => {
     }
 
     // Log activity
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { logTaskUpdated } = require('../services/activityService');
     const project = await Project.findByPk(task.projectId);
     if (project) {
@@ -308,6 +314,7 @@ router.post('/:id/comments', async (req: AuthRequest, res: Response) => {
     });
 
     // Log activity
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { logCommentAdded } = require('../services/activityService');
     const project = await Project.findByPk(task.projectId);
     if (project) {

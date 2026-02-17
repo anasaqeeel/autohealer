@@ -40,9 +40,9 @@ async function fetchApi<T>(
 
   console.log('[API] Making request to:', url, 'Method:', options.method || 'GET')
 
-  const headers: HeadersInit = {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...options.headers,
+    ...(options.headers as Record<string, string>),
   }
 
   if (token) {

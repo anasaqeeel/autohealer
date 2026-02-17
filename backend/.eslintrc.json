@@ -19,7 +19,9 @@
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
-    "no-console": "off"
+    "no-console": "off",
+    "@typescript-eslint/no-require-imports": "off",
+    "no-case-declarations": "off"
   },
   "ignorePatterns": ["dist/", "node_modules/", "coverage/", "*.js"]
 }

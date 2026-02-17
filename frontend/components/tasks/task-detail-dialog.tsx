@@ -39,22 +39,24 @@ export function TaskDetailDialog({
   const { mutate: updateTask, isPending: isUpdating } = useUpdateTask()
   const { mutate: createComment, isPending: isCommentPending } = useCreateComment()
   const [commentText, setCommentText] = useState('')
-  const [newStatus, setNewStatus] = useState(task?.status || 'todo')
-  const [newPriority, setNewPriority] = useState(task?.priority || 'medium')
+  const [newStatus, setNewStatus] = useState<'todo' | 'in_progress' | 'done'>(task?.status || 'todo')
+  const [newPriority, setNewPriority] = useState<'low' | 'medium' | 'high'>(task?.priority || 'medium')
 
   const handleStatusChange = (status: string) => {
-    setNewStatus(status)
+    const validStatus = status as 'todo' | 'in_progress' | 'done'
+    setNewStatus(validStatus)
     updateTask({
       id: task.id,
-      status: status as any,
+      status: validStatus,
     })
   }
 
   const handlePriorityChange = (priority: string) => {
-    setNewPriority(priority)
+    const validPriority = priority as 'low' | 'medium' | 'high'
+    setNewPriority(validPriority)
     updateTask({
       id: task.id,
-      priority: priority as any,
+      priority: validPriority,
     })
   }
 
