@@ -56,7 +56,7 @@ async function fetchApi<T>(
   try {
     const response = await fetch(url, {
       ...options,
-      headers,
+      headers: fetchHeaders,
     })
 
     console.log('[API] Response status:', response.status, 'for', url)
