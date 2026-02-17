@@ -1,13 +1,14 @@
 # Frontend Dockerfile
 # Multi-stage build for optimized Next.js production image
-#
+# This is the FRONTEND Dockerfile - do not use backend files!
+
 # Stage 1: Dependencies
 # - Installs all dependencies
 FROM node:20-alpine AS deps
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files (FRONTEND only - no backend/)
 COPY package*.json ./
 COPY .npmrc* ./
 

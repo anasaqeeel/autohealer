@@ -1,50 +1,38 @@
-# Dependencies
+# Frontend .dockerignore
+# Ignore everything except what we need for frontend build
+
+# Ignore backend directory completely
+backend/
+
+# Ignore root files
+Dockerfile
+railway.json
+*.md
+.git
+.gitignore
+
+# Ignore node_modules (will be installed)
 node_modules
 npm-debug.log
 yarn-error.log
-pnpm-debug.log
 
-# Build output
+# Ignore build outputs
 .next
 out
 dist
 build
 
-# Environment files
+# Ignore environment files
 .env
 .env.local
-.env.*.local
+.env*.local
 
-# IDE
+# Ignore IDE files
 .vscode
 .idea
 *.swp
 *.swo
 
-# OS
+# Ignore OS files
 .DS_Store
 Thumbs.db
-
-# Git
-.git
-.gitignore
-
-# Tests
-coverage
-.nyc_output
-
-# Logs
-*.log
-logs
-
-# Documentation (not needed in container)
-*.md
-!README.md
-
-# Scripts (not needed in container)
-scripts
-
-# V0 runtime files
-__v0_runtime_loader.js
-__v0_devtools.tsx
-__v0_jsx-dev-runtime.ts
