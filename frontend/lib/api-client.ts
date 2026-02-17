@@ -40,6 +40,7 @@ async function fetchApi<T>(
 
   console.log('[API] Making request to:', url, 'Method:', options.method || 'GET')
 
+  // Use Record type for flexible header assignment
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...(options.headers as Record<string, string>),
@@ -48,6 +49,9 @@ async function fetchApi<T>(
   if (token) {
     headers['Authorization'] = `Bearer ${token}`
   }
+
+  // Convert to HeadersInit for fetch API
+  const fetchHeaders: HeadersInit = headers
 
   try {
     const response = await fetch(url, {

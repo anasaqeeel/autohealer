@@ -55,11 +55,11 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        // @ts-expect-error - react-day-picker v9 uses different component names
+        // @ts-ignore - react-day-picker v9 component API - types are incorrect
         IconLeft: () => <ChevronLeft className="h-4 w-4" />,
-        // @ts-expect-error - react-day-picker v9 uses different component names
+        // @ts-ignore - react-day-picker v9 component API - types are incorrect
         IconRight: () => <ChevronRight className="h-4 w-4" />,
-      }}
+      } as any}
       {...props}
     />
   )

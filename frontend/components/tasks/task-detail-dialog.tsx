@@ -43,21 +43,25 @@ export function TaskDetailDialog({
   const [newPriority, setNewPriority] = useState<'low' | 'medium' | 'high'>(task?.priority || 'medium')
 
   const handleStatusChange = (status: string) => {
-    const validStatus = status as 'todo' | 'in_progress' | 'done'
-    setNewStatus(validStatus)
-    updateTask({
-      id: task.id,
-      status: validStatus,
-    })
+    // Type guard to ensure valid status
+    if (status === 'todo' || status === 'in_progress' || status === 'done') {
+      setNewStatus(status)
+      updateTask({
+        id: task.id,
+        status,
+      })
+    }
   }
 
   const handlePriorityChange = (priority: string) => {
-    const validPriority = priority as 'low' | 'medium' | 'high'
-    setNewPriority(validPriority)
-    updateTask({
-      id: task.id,
-      priority: validPriority,
-    })
+    // Type guard to ensure valid priority
+    if (priority === 'low' || priority === 'medium' || priority === 'high') {
+      setNewPriority(priority)
+      updateTask({
+        id: task.id,
+        priority,
+      })
+    }
   }
 
   const handleAddComment = async () => {
