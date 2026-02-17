@@ -22,8 +22,8 @@ The frontend needs to be deployed as a **separate service** on Railway.
 ### Step 2: Configure Service
 
 1. **Root Directory:** Set to `frontend`
-2. **Dockerfile Path:** Set to `frontend/Dockerfile`
-3. Railway should auto-detect this, but verify in Settings
+2. Railway will use `frontend/railway.json` automatically (I just created it)
+3. Verify in Settings that Dockerfile path is `Dockerfile` (relative to frontend directory)
 
 ### Step 3: Add Environment Variables
 
