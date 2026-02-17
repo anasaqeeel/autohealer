@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { AlertCircle, CheckCircle2 } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { apiClient } from '@/lib/api-client'
+import { apiPost, setAuthToken } from '@/lib/api-client'
 
 export default function SignupPage() {
   const router = useRouter()
@@ -41,24 +41,28 @@ export default function SignupPage() {
     setIsLoading(true)
 
     try {
-      const response = await apiClient.post('/auth/register', {
+      const response = await apiPost('/auth/register', {
         name,
         email,
         password,
       })
 
-      if (response.data.success) {
+      if (response.success && response.data) {
+        const { token } = response.data as any
         setSuccess(true)
         // Store token
-        localStorage.setItem('token', response.data.data.token)
+        if (token) {
+          setAuthToken(token)
+        }
         // Redirect to dashboard after 1 second
         setTimeout(() => {
           router.push('/dashboard')
         }, 1000)
+      } else {
+        setError(response.error?.message || 'Failed to create account. Please try again.')
       }
     } catch (err: any) {
       setError(
-        err.response?.data?.message || 
         err.message || 
         'Failed to create account. Please try again.'
       )
