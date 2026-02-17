@@ -1,21 +1,17 @@
-# Frontend Dockerfile
-# Multi-stage build for optimized Next.js production image
-# This is the FRONTEND Dockerfile - do not use backend files!
-# Cache bust: v2.0 - Force fresh build
+# Frontend Dockerfile - Next.js Production Build
+# This is the FRONTEND service - DO NOT use backend files!
+# Cache bust: v3.0 - 2026-02-17
 
 # Stage 1: Dependencies
-# - Installs all dependencies
 FROM node:20-alpine AS deps
-
 WORKDIR /app
 
-# Copy package files (FRONTEND only - no backend/)
-# IMPORTANT: This is frontend, not backend!
-COPY package*.json ./
+# Copy ONLY frontend package files
+COPY package.json package-lock.json* ./
 COPY .npmrc* ./
 
-# Install dependencies
-RUN npm ci --no-cache
+# Install dependencies (no cache to force fresh install)
+RUN npm ci --no-cache --legacy-peer-deps
 
 # Stage 2: Builder
 # - Builds the Next.js application
