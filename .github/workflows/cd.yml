@@ -21,7 +21,7 @@ jobs:
   build-and-push:
     name: Build and Push Docker Images
     runs-on: ubuntu-latest
-    # Permissions inherited from workflow level
+    # Permissions inherited from workflow level (contents: read, packages: write)
     
     strategy:
       matrix:
