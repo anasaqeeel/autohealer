@@ -38,6 +38,8 @@ async function fetchApi<T>(
   const url = `${API_BASE_URL}${endpoint}`
   const token = getAuthToken()
 
+  console.log('[API] Making request to:', url, 'Method:', options.method || 'GET')
+
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
     ...options.headers,
@@ -53,6 +55,8 @@ async function fetchApi<T>(
       headers,
     })
 
+    console.log('[API] Response status:', response.status, 'for', url)
+
     const contentType = response.headers.get('content-type')
     let data
 
@@ -63,6 +67,7 @@ async function fetchApi<T>(
     }
 
     if (!response.ok) {
+      console.error('[API] Error response:', data)
       return {
         success: false,
         error: {
@@ -73,19 +78,24 @@ async function fetchApi<T>(
       }
     }
 
+    console.log('[API] Success response for', url)
     return {
       success: true,
       data: data.data || data,
     }
   } catch (error) {
     console.error('[API Error]', endpoint, error)
+    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred'
+    console.error('[API] Full error details:', {
+      endpoint,
+      url,
+      error: errorMessage,
+      errorType: error instanceof TypeError ? 'Network/CORS Error' : 'Unknown Error'
+    })
     return {
       success: false,
       error: {
-        message:
-          error instanceof Error
-            ? error.message
-            : 'An unexpected error occurred',
+        message: errorMessage,
         statusCode: 0,
       },
     }

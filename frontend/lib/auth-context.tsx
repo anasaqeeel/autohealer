@@ -75,13 +75,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const login = async (credentials: AuthLoginRequest) => {
     setIsLoading(true)
     try {
+      console.log('[Auth] Attempting login for:', credentials.email)
       const response = await apiPost('/auth/login', credentials)
+      console.log('[Auth] Login response:', response)
 
       if (!response.success || !response.data) {
-        throw new Error(response.error?.message || 'Login failed')
+        const errorMessage = response.error?.message || 'Login failed'
+        console.error('[Auth] Login failed:', errorMessage, response.error)
+        throw new Error(errorMessage)
       }
 
       const { token, user: userData, organizations: orgs } = response.data as any
+
+      if (!token) {
+        throw new Error('No token received from server')
+      }
 
       // Store token
       setAuthToken(token)
@@ -98,9 +106,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       localStorage.setItem('auth_user', JSON.stringify(userData))
       localStorage.setItem('auth_organizations', JSON.stringify(orgs))
       localStorage.setItem('auth_current_organization', JSON.stringify(currentOrg))
+      
+      console.log('[Auth] Login successful for:', userData.email)
     } catch (error) {
       console.error('[Auth] Login error:', error)
-      throw error
+      // Re-throw with better error message
+      if (error instanceof Error) {
+        throw error
+      }
+      throw new Error('Failed to login. Please check your credentials.')
     } finally {
       setIsLoading(false)
     }
