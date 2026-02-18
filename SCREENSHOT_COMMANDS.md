@@ -55,11 +55,18 @@ kubectl get pods -n taskmaster-pro -o wide
 
 **Step 2 - Delete:**
 ```bash
-# Get a pod name first
+# Get a pod name first (IMPORTANT: Use POD_NAME as variable name, not a pod name!)
 POD_NAME=$(kubectl get pods -n taskmaster-pro -l app=backend -o jsonpath='{.items[0].metadata.name}')
 echo "Deleting pod: $POD_NAME"
 kubectl delete pod $POD_NAME -n taskmaster-pro
 ```
+
+**OR simpler - just pick a pod name from the list:**
+```bash
+# Pick any backend pod name from the list above, then:
+kubectl delete pod backend-5bfbfc554c-ld6th -n taskmaster-pro
+```
+
 **Screenshot 2:** Terminal showing "pod deleted"
 
 **Step 3 - After (Watch Recreation):**
