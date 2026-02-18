@@ -53,7 +53,14 @@ export default function TasksPage() {
                 : "All tasks are complete or filters are too restrictive"}
             </p>
             {filters.assignedTo === 'me' && (
-              <Button variant="outline" onClick={() => window.location.href = '/projects'}>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    window.location.href = '/projects'
+                  }
+                }}
+              >
                 Go to Projects
               </Button>
             )}
