@@ -64,21 +64,5 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  # Deploy to Railway (if configured)
-  # Note: Railway auto-deploys on git push, so this is optional
-  deploy-railway:
-    name: Deploy to Railway
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-    needs: build-and-push
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Deploy to Railway
-        uses: bervProject/railway-deploy@v1.0.0
-        with:
-          railway_token: ${{ secrets.RAILWAY_TOKEN }}
-          service: backend
-        continue-on-error: true
+  # Note: Railway auto-deploys on git push to main branch
+  # No manual deployment step needed - Railway watches the repo
