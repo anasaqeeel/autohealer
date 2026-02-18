@@ -68,3 +68,4 @@ k8s/secrets.yaml
 # package-lock.json
 # yarn.lock
 # pnpm-lock.yaml
+minikube-linux-amd64
