@@ -6,6 +6,7 @@ import type { TaskFilters } from '@/lib/types'
 import { TasksTable } from '@/components/tasks/tasks-table'
 import { TasksFilters } from '@/components/tasks/tasks-filters'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Button } from '@/components/ui/button'
 import { CheckSquare } from 'lucide-react'
 
 export default function TasksPage() {
