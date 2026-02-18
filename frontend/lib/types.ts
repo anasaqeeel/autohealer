@@ -59,6 +59,7 @@ export interface Task {
   priority: 'low' | 'medium' | 'high'
   assigneeId?: string
   assignee?: User
+  project?: { id: string; name: string }
   dueDate?: string
   createdAt: string
   updatedAt: string

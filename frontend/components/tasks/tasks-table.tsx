@@ -60,7 +60,7 @@ export function TasksTable({ tasks }: TasksTableProps) {
 
   return (
     <>
-      <div className="border border-border rounded-lg overflow-hidden bg-card">
+      <div className="border border-border rounded-lg overflow-hidden bg-card shadow-sm">
         <Table>
           <TableHeader className="bg-muted/50">
             <TableRow className="border-b border-border hover:bg-transparent">
@@ -76,10 +76,17 @@ export function TasksTable({ tasks }: TasksTableProps) {
             {tasks.map((task) => (
               <TableRow
                 key={task.id}
-                className="border-b border-border cursor-pointer hover:bg-muted/50 transition-colors"
+                className="border-b border-border cursor-pointer hover:bg-muted/50 transition-colors group"
                 onClick={() => setSelectedTask(task)}
               >
-                <TableCell className="font-medium">{task.title}</TableCell>
+                <TableCell className="font-medium group-hover:text-primary transition-colors">
+                  <div className="flex items-center gap-2">
+                    <span>{task.title}</span>
+                    {task.project && (
+                      <span className="text-xs text-muted-foreground">({task.project.name})</span>
+                    )}
+                  </div>
+                </TableCell>
                 <TableCell>
                   <Badge
                     variant="outline"

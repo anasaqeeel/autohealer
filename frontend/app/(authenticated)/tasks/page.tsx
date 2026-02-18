@@ -20,8 +20,8 @@ export default function TasksPage() {
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground">My Tasks</h1>
-          <p className="text-muted-foreground mt-2">
+          <h1 className="text-3xl font-bold text-foreground mb-2">My Tasks</h1>
+          <p className="text-muted-foreground">
             Tasks assigned to you across all projects
           </p>
         </div>
@@ -39,16 +39,23 @@ export default function TasksPage() {
             ))}
           </div>
         ) : tasks.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="flex flex-col items-center justify-center py-16 text-center bg-muted/20 rounded-lg border border-dashed border-border">
             <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
               <CheckSquare className="w-8 h-8 text-muted-foreground" />
             </div>
             <h2 className="text-xl font-semibold text-foreground mb-2">
               No tasks found
             </h2>
-            <p className="text-muted-foreground">
-              All tasks are complete or filters are too restrictive
+            <p className="text-muted-foreground mb-4">
+              {filters.assignedTo === 'me' 
+                ? "You don't have any tasks assigned yet. Create a task in a project and assign it to yourself."
+                : "All tasks are complete or filters are too restrictive"}
             </p>
+            {filters.assignedTo === 'me' && (
+              <Button variant="outline" onClick={() => window.location.href = '/projects'}>
+                Go to Projects
+              </Button>
+            )}
           </div>
         ) : (
           <TasksTable tasks={tasks} />

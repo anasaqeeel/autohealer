@@ -18,24 +18,24 @@ export function ProjectsList({ projects }: ProjectsListProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-4">
       {projects.map((project) => (
         <Card
           key={project.id}
-          className="border-border hover:border-primary/50 transition-colors group"
+          className="border-border hover:border-primary/50 transition-all group hover:shadow-md"
         >
           <CardHeader>
-            <div className="flex items-start justify-between">
-              <div className="flex items-start gap-3 flex-1">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-3 flex-1 min-w-0">
                 <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
                   <Folder className="w-5 h-5 text-primary" />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-foreground truncate text-sm">
+                <div className="flex-1 min-w-0 overflow-hidden">
+                  <h3 className="font-semibold text-foreground text-sm leading-tight break-words line-clamp-2">
                     {project.name}
                   </h3>
                   {project.description && (
-                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                    <p className="text-xs text-muted-foreground mt-1.5 line-clamp-2 break-words">
                       {project.description}
                     </p>
                   )}
@@ -43,7 +43,7 @@ export function ProjectsList({ projects }: ProjectsListProps) {
               </div>
               <Badge
                 variant="secondary"
-                className={`capitalize flex-shrink-0 ${getStatusColor(project.status)}`}
+                className={`capitalize flex-shrink-0 ml-2 ${getStatusColor(project.status)}`}
               >
                 {project.status}
               </Badge>
@@ -53,16 +53,16 @@ export function ProjectsList({ projects }: ProjectsListProps) {
           <CardContent>
             <div className="space-y-4">
               {/* Stats */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-xs text-muted-foreground">Total Tasks</p>
-                  <p className="text-lg font-semibold text-foreground">
+              <div className="grid grid-cols-2 gap-4 py-2">
+                <div className="bg-muted/30 rounded-lg p-3">
+                  <p className="text-xs text-muted-foreground mb-1">Total Tasks</p>
+                  <p className="text-xl font-bold text-foreground">
                     {project.taskCount || 0}
                   </p>
                 </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Open</p>
-                  <p className="text-lg font-semibold text-orange-600 dark:text-orange-400">
+                <div className="bg-orange-500/10 rounded-lg p-3">
+                  <p className="text-xs text-muted-foreground mb-1">Open</p>
+                  <p className="text-xl font-bold text-orange-600 dark:text-orange-400">
                     {project.openTaskCount || 0}
                   </p>
                 </div>
@@ -94,7 +94,7 @@ export function ProjectsList({ projects }: ProjectsListProps) {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-full justify-center gap-2 mt-2 group bg-transparent"
+                  className="w-full justify-center gap-2 mt-4 group hover:bg-primary hover:text-primary-foreground transition-colors"
                 >
                   View Project
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

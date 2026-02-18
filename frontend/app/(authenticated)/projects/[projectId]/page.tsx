@@ -23,8 +23,14 @@ export default function ProjectDetailPage() {
     title: string
     description?: string
     priority?: string
+    assigneeId?: string
   }) => {
-    await createTask({ projectId, ...data } as any)
+    // Auto-assign to current user if not specified
+    await createTask({ 
+      projectId, 
+      ...data,
+      assigneeId: data.assigneeId || 'me' // Will be resolved to current user ID on backend
+    } as any)
     setShowCreateTask(false)
   }
 

@@ -284,12 +284,15 @@ router.post('/:id/tasks', async (req: AuthRequest, res: Response) => {
       return;
     }
 
+    // Auto-assign to current user if assigneeId is 'me' or not provided
+    const finalAssigneeId = assigneeId === 'me' || !assigneeId ? userId : assigneeId;
+
     const task = await Task.create({
       projectId: project.id,
       title,
       description,
       priority: priority || 'medium',
-      assigneeId,
+      assigneeId: finalAssigneeId,
       dueDate: dueDate ? new Date(dueDate) : undefined,
       status: 'todo',
     });
